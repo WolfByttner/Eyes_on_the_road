@@ -1,0 +1,5 @@
+.cvsignore
+*.pyc
+MANIFEST
+build
+dist

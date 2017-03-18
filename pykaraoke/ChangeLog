@@ -1,0 +1,494 @@
+*******************************************************************************
+**** This is a part of PyKaraoke.                                          ****
+****                                                                       ****
+**** Copyright (C) 2007  Kelvin Lawson (kelvinl@users.sourceforge.net)     ****
+**** Copyright (C) 2009  PyKaraoke Development Team                        ****
+****                                                                       ****
+**** This library is free software; you can redistribute it and/or         ****
+**** modify it under the terms of the GNU Lesser General Public            ****
+**** License as published by the Free Software Foundation; either          ****
+**** version 2.1 of the License, or (at your option) any later version.    ****
+****                                                                       ****
+**** This library is distributed in the hope that it will be useful,       ****
+**** but WITHOUT ANY WARRANTY; without even the implied warranty of        ****
+**** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU     ****
+**** Lesser General Public License for more details.                       ****
+****                                                                       ****
+**** You should have received a copy of the GNU Lesser General Public      ****
+**** License along with this library; if not, write to the                 ****
+**** Free Software Foundation, Inc.                                        ****
+**** 59 Temple Place, Suite 330                                            ****
+**** Boston, MA  02111-1307  USA                                           ****
+*******************************************************************************
+
+2011-08-23 Kelvin Lawson <kelvinl@users.sf.net>
+ * Enhancements:
+    pykdb.py: Reduce memory usage during duplicate file hash check.
+    pykdb.py: Handle corrupted ZIP files.
+
+2011-08-22 Kelvin Lawson <kelvinl@users.sf.net>
+ * Bug fixes:
+    pykdb.py: Fixes for unicode strings converted to ASCII.
+	pykaraoke.py: Fixes for bytestrings that are not unicode.
+
+2011-06-19 Kelvin Lawson <kelvinl@users.sf.net> 0.7.4
+ * Bug fixes:
+    pykaraoke.py: Allow search for unicode song names.
+    pykaraoke.py: Fix FileDetails dialog for non-ascii characters.
+    pykdb.py: Fixes for international characters in filenames.
+
+2011-01-02 Kelvin Lawson <kelvinl@users.sf.net>
+ * Enhancements:
+    performer_prompt.py: Improve sizing on Windows.
+
+2010-09-16 Kelvin Lawson <kelvinl@users.sf.net>
+  * Enhancements:
+    pykar.py: Better platform detection using ENV_POSIX.
+    pykaraoke.py: Better platform detection using ENV_POSIX.
+    pykconstants.py: Better platform detection using ENV_POSIX.
+    pykenv.py: Better platform detection using ENV_POSIX.
+
+2010-05-11 Kelvin Lawson <kelvinl@users.sf.net> 0.7.3
+  * Bug fixes:
+    -r1.62 pykaraoke.py: Make About window work with Wx2.6 again. Recent 
+     About window changes work on Wx2.8 only.
+
+2010-04-21
+  * Enhancements:
+     -r1.61 pykaraoke.py: Add options for double-buffered and hardware
+     -r1.39 pykdb.py: Add options for double-buffered and hardware
+     -r1.18 pykmanager.py: Add options for double-buffered and hardware
+     -r1.12 pykplayer.py: 'P' key pauses.
+     -r1.11 pykplayer.py: Backspace rewinds.
+
+  * Bug fixes:
+     - r1.9 _pcdgAux.c: Fix occasional crash in CDG player.
+
+2010-04-20
+  * Enhancements:
+     -r1.60 pykaraoke.py: Support left/right margins, and two-column printing.
+     -r1.20 pykar.py: OSX works better with Timidity.
+
+2010-04-16
+  * Enhancements:
+     -r1.59 pykaraoke.py: Allow omitting filename from printout.
+
+2010-04-14
+  * Enhancements:
+     -r1.38 pykdb.py: Remove articles from sort key, faster scrolling on GP2X.
+     -r1.34 pycdg.py: Clean up keyboard operations and allow remote control
+      access to pykaraoke_mini.
+     -r1.10 pykaraoke_mini.py: Clean up keyboard operations and allow remote
+      control access to pykaraoke_mini.
+     -r1.9 pykaraoke_mini.py: Remove articles from sort key, faster scrolling on GP2X.
+     -r1.19 pykar.py: Clean up keyboard operations and allow remote control
+     -r1.17 pympg.py: Clean up keyboard operations and allow remote control
+
+2010-04-09
+  * Enhancements:
+     -r1.8 pycdgAux.py: Filter out draw commands based on mysterious bit 0x20.
+     -r1.8 _pycdgAux.c: Filter out draw commands based on mysterious bit 0x20.
+
+2010-04-08
+  * Enhancements:
+     -r1.37 pykdb.py: Handle invalid utf-8 in titles.txt.
+
+2010-03-31 Kelvin Lawson <kelvinl@users.sf.net> 0.7.3
+  * Bug fixes:
+    - r1.36 pykdb.py: Fix unicode folder searches. Add time string to temp
+      filename to work around bug in pygame.mixer.music on Windows.
+    - r1.33 pycdg.py: Fix unicode filename opens.
+    - r1.18 pykar.py: Fix unicode filename opens.
+    - r1.16 pympg.py: Fix unicode filename opens.
+
+2010-03-29
+  * Enhancements:
+     -r1.58 pykaraoke.py: Minor OSX fixes
+
+2009-10-25 Kelvin Lawson <kelvinl@users.sf.net> 0.7.2
+  * Bug fixes:
+    - r1.15 pympg.py: Support GetLength() call with external player. 
+
+2009-08-26 Kelvin Lawson <kelvinl@users.sf.net> 0.7.1
+  * Enhancements:
+    - r1.57 pykaraoke.py: Improved layout of CDG Configuration page with
+      song-derivation options.
+    - r1.56 pykaraoke.py, r1.35 pykdb.py: Add new option to exclude filenames
+      that don't match naming scheme from search results.
+    - r1.33 pykdb.py: Move from md5 to hashlib due to Python deprecation
+      warning.
+    - r1.32 pykdb.py: Now allows songs in database if they do not match the 
+      "Derive song information from filename" format. Sets the title field
+      only to the filename.
+    - r1.31 pycdg.py: Switch from MP3Info.py to python-mutagen for MP3 info
+      as more widely available in package managers.
+
+  * Bug Fixes:
+    - r1.31 pykdb.py: Fix failure to play songs from File View due to addition 
+      of "Derive song information from filename" feature.
+    - r1.31 pykdb.py: Report that song file does not match filename scheme, 
+      rather than the claimed ZIP error.
+
+2009-08-12 Kelvin Lawson <kelvinl@users.sf.net> 0.7.0
+  * Bug Fixes:
+    - r1.49 pykaraoke.py: Fix File Details available from Folder View.
+    - r1.50 pykaraoke.py: Fix selection of items in Folder View.
+    - r1.16 pykar.py: KAR/MID player now reports song length. 
+
+  * Enhancements:
+    - r1.51 pykaraoke.py: Performer prompt now pops up when adding to Playlist
+      from any panel.
+    - r1.52 pykaraoke.py: Defaults to Filename columns, Artist/Title columns
+      can be enabled from the Configuration menu.
+    - r1.30 pykdb.py: Add configuration option for Artist/Title columns.
+      Increased configuration structure version SETTINGS_VERSION to 4.
+    - r1.52 pykaraoke.py: New playlist resizing logic.
+
+2009-07-31 John Schneiderman <JohnMS@member.fsf.org> 0.7.0
+  * Bug Fixes:
+    - r1.33 pykaraoke.py: Could not directly play from a selected song in
+      the play-list.
+    - r1.37 pykaraoke.py: Printer setup in GNU/Linux without issue.
+    - r1.35 pykaraoke.py: Clicking search would load the entire database.
+      Locking up the system if the database was of a significant size. To load
+      the entire database a user simply needs to put an asterisk in the search
+      field.
+    - r1.41 pykaraoke.py: File scanning no longer locks the system when a file
+      name has invalid characters for the specified character set.
+    - r1.41 pykaraoke.py: Searching a string with characters not supported by
+      ASCII would lock up the system.
+    - r1.14 pymanager.py: File scanning no longer locks the system when a file
+      name has invalid characters for the specified character set.
+    - r1.14 pymanager.py: Searching a string with characters not supported by
+      ASCII would lock up the system.
+    - r1.38 pykaraoke.py: play-list window did not take advantage of the full
+      window size.
+    - r1.26 pykdb.py: displays error message if unable to write to a file.
+    - r1.46 pykaraoke.py: Play-list window now displays information cleanly.
+  * Enhancements:
+    - r1.30 pykaraoke.py: Time progress indicator in the status message of the
+      song being played.
+    - r1.36 pykaraoke.py: Displays license information.
+    - r1.34 pykaraoke.py: Automatically save the window size on closing.
+    - r1.33 pykaraoke.py: When not using an auto play-list, you can start and
+      stop various songs.
+    - r1.32 pykaraoke.py: Adds a sorting identifier to each search column.
+    - r1.31 pykaraoke.py: Adds the option to play straight from a search list
+      or add the song to the play-list on a double click.
+    - r1.29 pykaraoke.py: Adds volume control of the song being played.
+    - r1.28 pykaraoke.py: Adds Kamikaze button to add a random song to
+      the play-list.
+    - r1.28 pykaraoke.py: Adds option to stop automatically playing next song
+      in play-list.
+    - r1.28 pykaraoke.py: Adds support for extracting artist and title
+      information automatically from file-names in a specified scheme.
+    - r1.38 pykaraoke.py: Adds a dialogue to track the karaoke performer.
+    - r1.24 pykdb.py: When a zip file encoding is not supported the full path
+      is given for the problem file.
+    - r1.40 pykaraoke.py: Adds option to disable clearing from the play-list
+      with the right click menu in the play-list.
+    - r1.24 pykdb.py: Gives path location when unable to open a zip file.
+    - r1.38 pykaraoke.py: Adds programme name to license display.
+    - r1.25 pykaraoke.py: Adds 48 kHz to available sample rates.
+    - r1.42 pykaraoke.py, r1.26 pykdb.py: Adds option to disable double-click
+      playing from the play-list.
+    - r1.45 pykaraoke.py: Right click to play in the play-list is only
+      displayed when a song is not already playing.
+    - r1.45 pykaraoke.py, r1.29 pykdb.py, r1.17 pykmanager.py: Adds option to
+      display the karaoke player without a frame.
+    - r1.46 pykaraoke.py: Play-list window now displays artist information.
+    - r1.47 pykaraoke.py: Moved clear play-list to reduce accidentally clearing
+      while running.
+
+v0.6:
+
+        * Reworked config page to add many more options.  Config options
+        are now respected by pykaraoke_mini as well as by pykaraoke
+        (though the config dialog itself is only accessible via
+        pykaraoke).
+
+        * Added capability to convert cdg files to mpg, via the --dump
+        command-line option.
+
+        * Added support for an external movie player, for instance,
+        Windows Media Player or mplayer, to play video file formats not
+        supported directly by pygame, such as AVI.  Using this method,
+        full-motion video karaoke files can now be played on the GP2X.
+
+        * The search/playlist window now has a user-draggable splitter
+        handle to control the relative size of the search and playlist
+        sides.  It's also possible to configure whether they should be
+        split vertically (left/right) or horizontally (top/bottom).
+
+        * Added pulldown menus to the search/playlist window.  Moved some
+        of the buttons on that window into the menu.
+
+        * Added options to print or export the song list.
+
+        * Added the ability to edit a song's artist or title on-the-fly
+        from within the search window.  The changes are written back into
+        the appropriate titles*.txt file.
+
+        * Fixed international character support for kar files.
+
+        * Fixed some incorrect lyrics detection in kar file parsing.
+
+        * Fixed a bug preventing loading titles*.txt files from nested
+        subdirectories within zip files.
+
+        * Changed the text colour on the pykaraoke_mini browser to
+        indicate the type of Karaoke file: kar, cdg, or mpg.
+
+        * Added left/right arrow keys to the pykaraoke_mini browser.
+        These skip to the next letter.
+
+        * The pykaraoke_mini browser will collapse multiple song files
+        sharing the same artist / title into a single line.
+
+        * Changed sound-sync keys from left/right arrow to
+        control-left/right arrow, to reduce accidental use of these keys.
+
+        * Further minor performance improvements to CDG player.
+
+        * Added automatic control of GP2X CPU speed.  This improves both
+        response time and battery life on the GP2X.
+
+        * Changed meaning of the shoulder buttons on GP2X.  Now right
+        button + joystick up/down means to skip a full page at a time;
+        left button + joystick left/right means to zoom the text smaller
+        or larger.
+
+        * New progress bar visible while scanning database.
+
+v0.5.1:
+
+        * All: Update all copyright dates.
+
+        * pykversion.py: Increase to v0.5.1.
+
+        * pykaraoke.py: Fix slow CDG playback with WxPython v2.8 by
+        overriding the default MainLoop() and making it sleep plenty.
+
+        * pykaraoke.py: Allow WxPython v2.8, fix usage of system variable
+        name now used by Wx 2.8.
+
+        * _pycdgAux.c, pycdgAux.py: Fix potential array bounds problem
+        with corrupt CDG data.
+
+        * pykaraoke.py: More sensible sizing of column in search results
+        and made Title and Artist columns more visible.
+
+        * pykaraoke.py: Check for WxPython v2.6.
+
+        * Reduced size of visible display of CDG graphics from 294x204 to
+        288x192, based on a new understanding of a presumed typo in the
+        CDG document.  This appears to solve some minor scrolling issues.
+
+v0.5:
+
+        * Fixed a problem in pykar.py with synchronization of lyrics to
+        music on certain MIDI files (files in which the tempo changes
+        during the song).
+
+        * Reworked rendering engine in pykar.py to support wordwrap and
+        font scaling.
+
+        * Wrote pykaraoke_mini.py, with an in-window scrolling interface
+        for environments in which a full keyboard/mouse is not available.
+
+        * Added pykplayer.py and pykmanager.py to collect together common
+        bits of code between the various player types.
+
+        * Made command-line options available to all public entry points:
+        pycdg.py, pykar.py, pymgr.py, pykaraoke.py, and pykaraoke_mini.py.
+
+        * Replaced threading code with explicit calls to manager.Poll().
+
+        * Moved the CDG-processing code from pycdg.py into pycdgAux.py,
+        and also ported it down to C in _pycdgAux.c for further runtime
+        optimization.
+
+        * Pushed default framerate back to 30 fps.  Setting it lower than
+        that has limited benefit with the new codebase.
+
+        * Added --zoom to control the mode in which pycdg.py scales its
+        display to fit the window.
+
+        * Added command-line parameters to control audio properties.
+
+        * Added separate "titles" and "artists" columns to the song
+        database, making it possible to sort the returned songlist by any
+        of the three columns.  The file titles.txt can be defined in the
+        directory with all of your song files to define the title and/or
+        artist for each song.
+
+        * Ported to the GP2X.
+
+        * Fixed horizontal scrolling CDGs.
+
+        * Smoother CDG scrolling.
+
+v0.4.3:
+        * pycdg.py: Fix "scratchy" audio on some systems.
+
+        * pykar.py: Support non-ASCII, non-unicode charsets <mantask>.
+
+        * pykaraoke.py: Add charset option & launch from command-line
+        <mantask>.
+
+        * pykaraoke.desktop: Add task-launcher file for file associations
+        <mantask>.
+
+        * pykaraoke.py: Show pykaraoke.xpm icon as WX window icon.
+
+v0.4.2:
+        * pycdg.py: Allow CDG filenames without extension (just a .) to allow for
+        tab-completion.
+
+        * pycdg.py: Fix border preset (don't clear full-screen).
+
+        * pycdg.py: Add --nomusic option.
+
+        * pycdg.py: pycdg: Fix option type 'str' in optparse
+
+        * pycdg.py: pycdg: Fix FutureWarning on 0xFFFFFFFFs
+
+        * pykaraoke.py: Add drag-and-drop support from search results and within
+        playlist.
+
+        * pykaraoke.py: Add drag-and-drop from Folder View
+
+        * pykaraoke.py: Reuse PyKaraoke without the GUI from Craig Rindy:
+        scripters might find it useful to reuse many things
+        implemented in pykaraoke.py such as zip file handling.
+        The attached patch allows the pykaraoke module (in
+        particular PyKaraokeManager) to be used without the
+        main application window. The patch also includes a
+        refactoring of SongDB.FolderScan to allow for reuse.
+
+        * pykaraoke.py: Support non-ASCII characters in filenames from Craig Rindy:
+        Any valid file can be imported, and filenames that present
+        problems in the search are skipped so that the search may
+        continue through the rest of the database.
+
+v0.4.1:
+
+        * pycdg.py: Fix typo in "CDG file may be corrupt" warning (wwf)
+
+        * pycdg.py: Add -t/--title option to set the window title to
+        something specific (useful for window managers that can remember
+        window settings like sticky, size, location, stacking, desktop,
+        etc., based on window title/name/class attributes, like
+        Enlightenment does) (wwf)
+
+        * Add install script and /usr/bin links in install directory.
+
+        * Get icons and fonts from current directory or /usr/share/pykaraoke.
+
+        * Use /usr/bin/env for shebang.
+
+        * pykaraoke.py: Add KAR inside ZIP fix from Andrei Gavrila.
+
+        * pykaraoke.py: Add mid/mpg extension fix from Andrei Gavrila.
+
+        * pycdg.py: Default to 10 frames per second.
+
+        * pycdg.py: Fix scrolling variable names
+
+        * pykaraoke.py: Fix wx 2.6 API change.
+
+        * pycdg.py: Split the screen into 24 tiles for better screen
+        update performance.
+
+        * pycdg.py: Lower delay time when no packets are due.
+
+        * pycdg.py: Don't update the screen if 1/4 second out of sync.
+
+        * pycdg.py: Don't specify the display depth, pygame will use the
+        most appropriate.
+
+v0.4:
+
+        * Use optparse to support additional command-line options
+        (optparse is included in Python 2.3 and newer, on all standard
+        Python-supporting platforms); run "pycdg.py --help" to see a full
+        list of supported options.
+
+        * Permit user to specify window's starting X and Y positions
+
+        * Permit user to specify window's starting X and Y sizes
+
+        * Permit user to start the player in fullscreen mode
+
+        * Permit user to specify FPS on command line, defaults to 60
+
+        * Pass cdgPlayer.__init__() an "options" object now instead of a
+        filename; contains size_x, size_y, pos_x, pos_y, fullscreen,
+        cdgFileName
+
+        * cdgPlayer.run(): it's pedantic, but use self.Close() instead of
+        setting self.State manually
+
+        * Add key binding "q" to exit ([ESC] still works)
+
+        * Hide the mouse cursor (both in fullscreen and in windowed mode)
+
+        * Fix "Frames Per Second" so it's honored (previously it was
+        ignored because curr_pos wasn't always updated as often as needed)
+
+        * Change order of import statements so local versions of pygame,
+        Numeric can be picked up if present.
+
+        * Check for all mixed-case cases of matching audio files (mp3,
+        ogg)
+
+        * Misc. tab/spacing fixes in "constant" definitions
+
+v0.3.1:
+
+        * Added full-screen player mode (CDG and MPG)
+
+        * Supports the latest WxPython (v2.6)
+
+        * Improved CPU usage
+
+        * Displays ZIP filename together with the internal song filename
+
+v0.3:
+
+        * Added MIDI/KAR file support
+
+        * CDG player now uses psyco for faster playback on low-end
+        machines
+
+        * Better handling of corrupt CDG rips
+
+        * Minor changes to make it more OSX-friendly
+
+        * Added facility for cancelling song database builds in PyKaraoke
+        GUI
+
+v0.2.1:
+
+        * Fixed colour cycling in the CDG player
+
+        * Fixed transparent colours used in CDG files
+
+        * Searches are optimised to handle thousands of CDG files very
+        quickly
+
+        * Fixed inaccurate right-clicking in the playlist on some systems
+
+        * Fixed Windows drive icon
+
+        * Fixed tree root issue on some Linux systems
+
+        * Added more status messages to the status bars
+
+v0.2:
+
+        * PyKaraoke can now be used on Windows (98/XP/2000)
+
+        * Modified the playlist logic
+
+        * Changes to work with pygame-1.6.2
