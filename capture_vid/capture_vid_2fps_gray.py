@@ -1,4 +1,4 @@
-# Using OpenCV 3.2.0.6 and Python 3.6.0 
+# Using OpenCV 3.2.0.6 and Python 2.7.13 
 
 import numpy as np
 import cv2
