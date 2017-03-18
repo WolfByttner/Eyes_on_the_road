@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="cdt.managedbuild.toolchain.gnu.mingw.base.2085283633">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.toolchain.gnu.mingw.base.2085283633" moduleId="org.eclipse.cdt.core.settings" name="XDK Default">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildProperties="" description="XDK Default Build" id="cdt.managedbuild.toolchain.gnu.mingw.base.2085283633" name="XDK Default" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="cdt.managedbuild.toolchain.gnu.mingw.base.2085283633.823056962" name="/" resourcePath="">
+						<toolChain id="com.bosch.cds.xdk.toolchain.299555137" name="BCDS XDK Toolchain" superClass="com.bosch.cds.xdk.toolchain">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.bosch.cds.xdk.toolchain.targetplatform.1469877962" isAbstract="false" osList="all" superClass="com.bosch.cds.xdk.toolchain.targetplatform"/>
+							<builder buildPath="${workspace_loc:\StreamSensorDataOverUsb\make}" id="com.bosch.cds.xdk.toolchain.builder.509924666" managedBuildOn="false" name="Gnu Make Builder.Default" superClass="com.bosch.cds.xdk.toolchain.builder"/>
+							<tool id="com.bosch.cds.xdk.toolchain.c.16501066" name="BCDS C Compiler" superClass="com.bosch.cds.xdk.toolchain.c"/>
+							<tool id="com.bosch.cds.xdk.toolchain.c.ld.13725613" name="BCDS C Linker" superClass="com.bosch.cds.xdk.toolchain.c.ld"/>
+							<tool id="com.bosch.cds.xdk.toolchain.as.626709848" name="BCDS Assembler" superClass="com.bosch.cds.xdk.toolchain.as"/>
+							<tool id="com.bosch.cds.xdk.toolchain.cxx.1184917446" name="BCDS C++ Compiler" superClass="com.bosch.cds.xdk.toolchain.cxx"/>
+							<tool id="com.bosch.cds.xdk.toolchain.cxx.ld.2083593162" name="BCDS C++ Linker" superClass="com.bosch.cds.xdk.toolchain.cxx.ld"/>
+							<tool id="com.bosch.cds.xdk.toolchain.ar.861713335" name="BCDS Archiver" superClass="com.bosch.cds.xdk.toolchain.ar"/>
+							<tool id="com.bosch.cds.xdk.toolchain.tool1.1333544892" name="BCDS Create Flash Image" superClass="com.bosch.cds.xdk.toolchain.tool1"/>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="StreamSensorDataOverUsb.null.155626025" name="StreamSensorDataOverUsb"/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="XDK Default">
+			<resource resourceType="PROJECT" workspacePath="/StreamSensorDataOverUsb"/>
+		</configuration>
+	</storageModule>
+</cproject>
