@@ -70,7 +70,7 @@
  */
 void init(void)
 {
-   accelerometerSensorInit();
+   //accelerometerSensorInit();
    gyroscopeSensorInit();
    //inertialSensorInit(); //Does the same as accelerometerSensorInit and gyroscopeSensorInit
    lightsensorInit();

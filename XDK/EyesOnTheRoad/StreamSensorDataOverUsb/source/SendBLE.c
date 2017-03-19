@@ -151,7 +151,7 @@ static void bleAppHandler(void *pParameters)
  */
 static void bleAlpwDataExchangeService(BleAlpwDataExchangeEvent event, BleStatus status, void *parms)
 {
-    BleStatus bleSendReturn = BLESTATUS_FAILED;
+
     /* check the Host side receive event */
     if ((BLEALPWDATAEXCHANGE_EVENT_RXDATA == event)
             && (BLESTATUS_SUCCESS == status)
@@ -179,12 +179,14 @@ static void bleAlpwDataExchangeService(BleAlpwDataExchangeEvent event, BleStatus
 
         	if(sleep_count)
         	{
-        		BLEALPWDATAEXCHANGE_SERVER_SendData(bleConnectionHandle, "sleep",UINT8_C(5));
-        		sleep_count = 0;
+
+        		//BLEALPWDATAEXCHANGE_SERVER_SendData(bleConnectionHandle, "sleep",UINT8_C(5));
+        		//sleep_count = 0;
         	}
         	else
         	{
-        		BLEALPWDATAEXCHANGE_SERVER_SendData(bleConnectionHandle, "awake",UINT8_C(5));
+        		//vTaskSuspend(bleTransmitTaskHandle);
+        		//BLEALPWDATAEXCHANGE_SERVER_SendData(bleConnectionHandle, "awake",UINT8_C(5));
         	}
         }
     }
@@ -232,6 +234,12 @@ static void usbInterruptHandling(void *callBackParam1, uint32_t count)
  */
 extern void callbackIsr(uint8_t *usbRcvBuffer,uint16_t count)
 {
+    BleStatus bleSendReturn = BLESTATUS_FAILED;
+    int8_t appTaskInitReturn = TIMER_NOT_ENOUGH_MEMORY;
+    BleStatus appInitReturn = BLESTATUS_FAILED;
+    BLE_notification_t configParams;
+    BLE_returnStatus_t returnValue;
+    BLE_status BleReturnValue = BLESTATUS_FAILED;
 	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 	if (USB_ENABLE_FLAG == interruptHandler)
 	{
@@ -242,7 +250,57 @@ extern void callbackIsr(uint8_t *usbRcvBuffer,uint16_t count)
 
 		if(NUMBER_ZERO == strcmp(receivedData,"sleep"))
 		{
-			sleep_count++;
+       	    /* avoid synchronize problem to get proper BMA280 chipID this delay is mandatory */
+			static_assert((portTICK_RATE_MS != 0), "Tick rate MS is zero");
+			vTaskDelay((portTickType) 1 / portTICK_RATE_MS);
+
+			returnValue = BLE_setDeviceName((uint8_t *) BLE_DEVICE_NAME, BLE_DEVICE_NAME_LENGTH);
+			if (returnValue != BLE_SUCCESS)
+			{
+				/* assertion reason : invalid device name */
+				assert(false);
+			}
+
+			/* enable and register notification callback for bluetooth device connect and disconnect*/
+			configParams.callback = notificationCallback;
+			configParams.enableNotification = BLE_ENABLE_NOTIFICATION;
+
+			returnValue = BLE_enablenotificationForConnect(configParams);
+			if (returnValue != BLE_SUCCESS)
+			{
+				/* assertion reason : Enable Notification Failed*/
+				assert(false);
+			}
+			/* Registering the BLE Services  */
+			BleReturnValue = BLE_customServiceRegistry(bleAppServiceRegister);
+			if (BleReturnValue != BLESTATUS_SUCCESS)
+			{
+				/* assertion reason : custom Service Registry Failed*/
+				assert(false);
+			}
+			/* Initialize the whole BLE stack */
+			appInitReturn = BLE_coreStackInit();
+
+			if (BLESTATUS_FAILED == (appInitReturn))
+			{
+				/* Assertion Reason : BLE Boot up process Failed, */
+				assert(false);
+			}
+			else
+			{
+
+				/* create task for BLE state machine */
+				appTaskInitReturn = xTaskCreate(bleAppHandler, (const char * const ) "BLE", STACK_SIZE_FOR_TASK, NULL, (uint32_t) BLE_TASK_PRIORITY, &bleTransmitTaskHandle);
+
+				/* BLE task creatioon fail case */
+				if (pdPASS != appTaskInitReturn)
+				{
+					/* Assertion Reason : BLE Task was not created, Due to Insufficient heap memory */
+					assert(false);
+				}
+
+			}
+			//sleep_count++;
 		}
 	}
 }
@@ -262,13 +320,8 @@ void bleInit(void)
 
     /* return value for BLE stack configuration */
 	int8_t retValPerSwTimer = TIMER_NOT_ENOUGH_MEMORY;
-    BleStatus appInitReturn = BLESTATUS_FAILED;
-    BLE_notification_t configParams;
-    BLE_returnStatus_t returnValue;
     Retcode_T UsbReturnValue = (Retcode_T)RETCODE_FAILURE;
-    BLE_status BleReturnValue = BLESTATUS_FAILED;
     /* return value for BLE task create */
-    int8_t appTaskInitReturn = TIMER_NOT_ENOUGH_MEMORY;
     Retcode_T advancedApiRetValue = (Retcode_T) RETCODE_FAILURE;
 
     sleep_count = 0;
@@ -286,67 +339,6 @@ void bleInit(void)
     if (UsbReturnValue != RETCODE_OK)
     {
         assert(false);
-    }
-
-    /* avoid synchronize problem to get proper BMA280 chipID this delay is mandatory */
-    static_assert((portTICK_RATE_MS != 0), "Tick rate MS is zero");
-    vTaskDelay((portTickType) 1 / portTICK_RATE_MS);
-
-    returnValue = BLE_setDeviceName((uint8_t *) BLE_DEVICE_NAME, BLE_DEVICE_NAME_LENGTH);
-    if (returnValue != BLE_SUCCESS)
-    {
-        /* assertion reason : invalid device name */
-        assert(false);
-    }
-
-    /* enable and register notification callback for bluetooth device connect and disconnect*/
-    configParams.callback = notificationCallback;
-    configParams.enableNotification = BLE_ENABLE_NOTIFICATION;
-
-    returnValue = BLE_enablenotificationForConnect(configParams);
-    if (returnValue != BLE_SUCCESS)
-    {
-        /* assertion reason : Enable Notification Failed*/
-        assert(false);
-    }
-    /* Registering the BLE Services  */
-    BleReturnValue = BLE_customServiceRegistry(bleAppServiceRegister);
-    if (BleReturnValue != BLESTATUS_SUCCESS)
-    {
-        /* assertion reason : custom Service Registry Failed*/
-        assert(false);
-    }
-    /* Initialize the whole BLE stack */
-    appInitReturn = BLE_coreStackInit();
-
-    if (BLESTATUS_FAILED == (appInitReturn))
-    {
-        /* Assertion Reason : BLE Boot up process Failed, */
-        assert(false);
-    }
-    else
-    {
-
-        /* create task for BLE state machine */
-        appTaskInitReturn = xTaskCreate(bleAppHandler, (const char * const ) "BLE", STACK_SIZE_FOR_TASK, NULL, (uint32_t) BLE_TASK_PRIORITY, &bleTransmitTaskHandle);
-
-        /* BLE task creatioon fail case */
-        if (pdPASS != appTaskInitReturn)
-        {
-            /* Assertion Reason : BLE Task was not created, Due to Insufficient heap memory */
-            assert(false);
-        }
-        uint32_t Ticks = DELAY;
-
-        if (Ticks != UINT32_MAX) /* Validated for portMAX_DELAY to assist the task to wait Infinitely (without timing out) */
-        {
-            Ticks /= portTICK_RATE_MS;
-        }
-        if (UINT32_C(0) == Ticks) /* ticks cannot be 0 in FreeRTOS timer. So ticks is assigned to 1 */
-        {
-            Ticks = UINT32_C(1);
-        }
-
     }
 }
 
