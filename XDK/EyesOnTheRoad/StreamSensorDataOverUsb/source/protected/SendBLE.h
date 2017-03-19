@@ -78,25 +78,13 @@
 static void bleAppHandler(void *pParameters);
 
 /**
- * @brief   The ALPWDATAEXCHANGE callback used in ALPWISE Data Exchange Profile
- *
- * @param[in] event: current device state or status
- *
- * @param[in] status: Event status i.e BLESTATUS_SUCCESS or BLESTATUS_FAILURE
- *
- * @param[in] parms : This void data pointer has more information of event i.e connection host data/event,
- *                    status,command etc
- */
-static void bleAlpwDataExchangeService(BleAlpwDataExchangeEvent event, BleStatus status, void *parms);
-
-/**
  * @brief  The BEA_bleServiceRegister is used to register the BLE Alpwise DataExchange
  *         service's into attribute database.
  */
 static void bleAppServiceRegister(void);
 
 
-static void checkForSleep(void *pvParameters);
+//static void checkForSleep(void *pvParameters);
 
 /**
  * @brief API called by OS_timerPendFunctionCallFromISR function, which is registered during the USB ISR

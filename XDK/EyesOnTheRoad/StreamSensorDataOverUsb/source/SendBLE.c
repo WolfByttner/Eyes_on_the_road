@@ -54,9 +54,20 @@
 #include "BLE_serialDriver_ih.h"
 #include "BleAlpwDataExchange_Server.h"
 #include "XdkUsbResetUtility.h"
+#include "USB_ih.h"
+#include "em_cmu.h"
+
 
 /* own header files */
 #include "SendBLE.h"
+
+/* Place the following code
+into local variables */
+#define USB_ENABLE_FLAG                UINT8_C(1)
+#define USB_DISABLE_FLAG               UINT8_C(0)
+#define USB_RECEIVE_BUFFER_LENGTH      UINT8_C(5)
+static volatile uint8_t interruptHandler = USB_ENABLE_FLAG;
+static char receivedData[USB_RECEIVE_BUFFER_LENGTH];
 
 /* constant definitions ***************************************************** */
 
@@ -96,105 +107,6 @@ static void notificationCallback(BLE_connectionDetails_t connectionDetails)
         assert(false);
         break;
     }
-}
-
-/**
- * @brief API called by xtimerPendFunctionCallFromISR function, which is registered during the USB ISR
- *
- * @param [in]callBackParam1 data buffer
- *
- * @param [in]callBackParam2 length
- */
-static void interruptHandling(void *callBackParam1, uint32_t callBackParam2)
-{
-    BLE_deviceState_t modeConfigured;
-    BLE_returnStatus_t retValue = BLE_FAILURE;
-    switch (recievedData[NUMBER_ZERO])
-    {
-    case SET_IDLE_MODE:
-        retValue = BLE_setMode(BLE_IDLE);
-        if (BLE_SUCCESS == retValue)
-        {
-            printf("enabling idle mode\r\n");
-        }
-        else
-        {
-            printf("enabling idle mode failed\r\n");
-        }
-        break;
-    case SET_DISCOVERABLE_MODE:
-        retValue = BLE_setMode(BLE_DISCOVERABLE);
-        if (BLE_SUCCESS == retValue)
-        {
-            printf("enabling discoverable mode\r\n");
-        }
-        else
-        {
-            printf("enabling discoverable mode failed\r\n");
-        }
-        break;
-    case SET_SLEEP_MODE:
-        retValue = BLE_setMode(BLE_NORMAL_SLEEP);
-        if (BLE_SUCCESS == retValue)
-        {
-            printf("enabling sleep mode\r\n");
-        }
-        else
-        {
-            printf("enabling sleep mode failed\r\n");
-        }
-        break;
-    case GET_DEVICE_MODE:
-        retValue = BLE_getMode(&modeConfigured);
-        if (BLE_SUCCESS == retValue)
-        {
-            switch (modeConfigured)
-            {
-            case BLE_DEVICE_IN_IDLE:
-                printf("Device is in Idle Sate\r\n");
-                break;
-            case BLE_DEVICE_IN_DISCOVERABLE:
-                printf("Device is in Discoverable Sate\r\n");
-                break;
-            case BLE_DEVICE_IN_SLEEP:
-                printf("Device is in sleep Sate\r\n");
-                break;
-            case BLE_DEVICE_IN_CONNECTED:
-                printf("Device is Connected to a Host\r\n");
-                break;
-            default:
-                break;
-            }
-        }
-        else
-        {
-            printf("Reading mode failed\r\n");
-        }
-        break;
-    default:
-        break;
-
-    }
-
-    /* re-enable  the usb interrupt flag*/
-    isInterruptHandled = ENABLE_FLAG;
-    UNUSED_PARAMETER(callBackParam1);
-    UNUSED_PARAMETER(callBackParam2);
-}
-
-static void checkForSleep(void *pvParameters)
-{
-	char str[5];
-	BCDS_UNUSED(pvParameters);
-
-	scanf("%s", &str);
-	printf("I heard: %s\n", str);
-
-	if((NUMBER_ZERO == strcmp(str, "sleep")))
-	{
-		sleep_count++;
-	}
-
 }
 
 /** The function used to initialize the BLE Device and handle, various of event in the state machine
@@ -299,33 +211,6 @@ static void bleAppServiceRegister(void)
 
 }
 
-/**
- * @brief USB recieve call back function
- *
- * @param[in] usbRcvBuffer recieved data
- *
- * @param[in] count length of the data received
- */
-void callbackIsr(uint8_t *usbRcvBuffer, uint16_t count)
-{
-    if (ENABLE_FLAG == isInterruptHandled)
-    {
-        isInterruptHandled = DISABLE_FLAG;
-
-        /* add to timer queue*/
-        portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
-        if (xTimerPendFunctionCallFromISR(interruptHandling, NULL, UINT8_C(0), &xHigherPriorityTaskWoken) == pdPASS)
-        {
-            memcpy(recievedData, usbRcvBuffer, count);
-            portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-        }
-        else
-        {
-            assert(false);
-        }
-
-    }
-}
 /* global functions ********************************************************* */
 
 /** the function initializes the BMA and its process
@@ -333,6 +218,45 @@ void callbackIsr(uint8_t *usbRcvBuffer, uint16_t count)
  * @brief The function initializes BMA(accelerometer)creates a auto reloaded
  * timer task which gets and transmit the accel raw data via BLE
  */
+
+/* Place the following code above USB_CallbackIsr()
+ */
+static void usbInterruptHandling(void *callBackParam1, uint32_t count)
+{
+    /* do something with receivedData and count */
+    reSendIncomingData((uint8_t*)receivedData, count);
+    /* re-enable  the usb interrupt flag*/
+    interruptHandler = USB_ENABLE_FLAG;
+}
+/* Place the following code above initReceiveDataISR()
+ */
+extern void callbackIsr(uint8_t *usbRcvBuffer,uint16_t count)
+{
+	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
+	if (USB_ENABLE_FLAG == interruptHandler)
+	{
+		interruptHandler = USB_DISABLE_FLAG;
+		memcpy(receivedData, usbRcvBuffer, count);
+
+		//printf("I heard: %s\n",receivedData);
+
+		if(NUMBER_ZERO == strcmp(receivedData,"sleep"))
+		{
+			sleep_count++;
+		}
+	}
+}
+
+
+/* Place the following code above appInitSystem()
+ */
+
+static void  initReceiveDataISR()
+{
+	UsbResetUtility_RegAppISR((UsbResetUtility_UsbAppCallback_T)callbackIsr);
+}
+
+
 void bleInit(void)
 {
 
@@ -349,13 +273,21 @@ void bleInit(void)
 
     sleep_count = 0;
 
-    /*registers the Application USB ISR */
+    USB_lineCoding_t
+     USBinit = {.Baudrate = 19200,.dataBits = 8,.charFormat = 0,
+     .parityType = 0, .dummy = 0, .usbRxCallback = NULL};
+
+    CMU_ClockEnable(cmuClock_USB,true);
+    USB_init(&USBinit);
+    UsbResetUtility_Init();
+    initReceiveDataISR();
+
     UsbReturnValue = UsbResetUtility_RegAppISR((UsbResetUtility_UsbAppCallback_T) callbackIsr);
     if (UsbReturnValue != RETCODE_OK)
     {
-        /* assertion reason : registering Application USB ISR failed*/
         assert(false);
     }
+
     /* avoid synchronize problem to get proper BMA280 chipID this delay is mandatory */
     static_assert((portTICK_RATE_MS != 0), "Tick rate MS is zero");
     vTaskDelay((portTickType) 1 / portTICK_RATE_MS);
@@ -413,19 +345,6 @@ void bleInit(void)
         if (UINT32_C(0) == Ticks) /* ticks cannot be 0 in FreeRTOS timer. So ticks is assigned to 1 */
         {
             Ticks = UINT32_C(1);
-        }
-        /* create timer task to get and transmit accel data via BLE for every one second automatically*/
-        bleTransmitTimerHandle = xTimerCreate((char * const ) "checkForSleep", Ticks, TIMER_AUTORELOAD_ON, NULL, checkForSleep);
-
-        retValPerSwTimer = xTimerStart(bleTransmitTimerHandle,TIMERBLOCKTIME);
-
-        if (NULL == bleTransmitTimerHandle)
-        {
-            assert(false);
-        }
-        if (TIMER_NOT_ENOUGH_MEMORY == retValPerSwTimer)
-        {
-            assert(false);
         }
 
     }

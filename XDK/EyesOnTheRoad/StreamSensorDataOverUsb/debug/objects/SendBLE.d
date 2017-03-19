@@ -23,6 +23,7 @@ C:/XDK-Workbench/workspace/EyesOnTheRoad/StreamSensorDataOverUsb/debug/objects/S
  ../Platform/BLE/include/BLE_stateHandler_ih.h \
  ../Platform/BLE/include/BLE_serialDriver_ih.h \
  ../Common/./include/XdkUsbResetUtility.h \
+ ../Platform/Peripherals/include/USB_ih.h \
  C:/XDK-Workbench/workspace/EyesOnTheRoad/StreamSensorDataOverUsb/source/protected/SendBLE.h
 
 ../Platform/Basics/include/BCDS_Basics.h:
@@ -70,5 +71,7 @@ C:/XDK-Workbench/workspace/EyesOnTheRoad/StreamSensorDataOverUsb/debug/objects/S
 ../Platform/BLE/include/BLE_serialDriver_ih.h:
 
 ../Common/./include/XdkUsbResetUtility.h:
+
+../Platform/Peripherals/include/USB_ih.h:
 
 C:/XDK-Workbench/workspace/EyesOnTheRoad/StreamSensorDataOverUsb/source/protected/SendBLE.h:
