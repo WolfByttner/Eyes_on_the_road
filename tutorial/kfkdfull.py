@@ -217,11 +217,14 @@ def fit(fname_pretrain = None):
 	X, y = load2d()
 	num = 0
 	if fname_pretrain:
+		print "Loading from", fname_pretrain
 		with open(fname_pretrain, 'rb') as f:
 			net_pretrain = pickle.load(f)
 	else:
 		net_pretrain = None
-	model.load_params_from(net_pretrain)
+		print "Starting new file"
+	if (net_pretrain):
+		net.load_params_from(net_pretrain)
 
 	try:
 		for i in range(60):
@@ -387,7 +390,7 @@ def plot_face(fname_net='net.pickle'):
 
 	sample = load2d(test=True)[0][8:9]
 
-
+	print sample.shape
 	with open(fname_net, 'rb') as f:
 		net = pickle.load(f)
 	y_pred = net.predict(sample)[0]
@@ -396,6 +399,229 @@ def plot_face(fname_net='net.pickle'):
 	ax = fig.add_subplot(1, 2, 2, xticks=[], yticks=[])
 	plot_sample(sample[0], y_pred, ax)
 	pyplot.show()
+
+
+from math import floor
+def sliding_window(frame, net, width, height, step):
+	ret = []
+	print  int(floor( frame.shape[0] / width)) 
+	for i in range(0, frame.shape[0]-width, step):
+		for j in range(0, frame.shape[1]-height, step):
+			window = frame[i:i+width,j:j+height]
+			tmp = np.zeros((width, height), dtype=np.float32)
+			#print tmp
+			#print "Loading sample"
+			#sample = load2d(test=True)[0][8:9]
+			#print sample
+			#print tmp	
+			print i, j, frame.shape
+			for row in range(width):
+				for col in range(height):
+					#print window[row,col]
+					tmp[row,col] = sum(window[row,col]) / (3*256);
+			#print "fixing tmp"
+			#print tmp
+			tmp = tmp.reshape(-1, 1, width, height)
+			#print (type(frame[i:i+width,j:j+height]), frame.shape) 
+			#print frame[i:i+width,j:j+height].shape 
+			#print frame
+			print "sliding", width, height, i, j
+			ret.append (net.predict(tmp))
+	return (ret);
+
+from time import sleep
+def plot_instance(frame, preds, width, height, step): 
+	#print list(preds)[0].shape
+	preds = list(preds)
+	fig = pyplot.figure(figsize=(6,3))
+	ax = fig.add_subplot(1, 2, 2, xticks=[], yticks=[])
+	x, y = frame.shape[0]/2,frame.shape[1]/2
+	window = frame[x:x+width,y:y+height]
+	print window.shape
+	tmp = np.zeros((width, height), dtype=np.float32)
+	for row in range(width):
+		for col in range(height):
+			tmp[row,col] = sum(window[row,col])
+
+	plot_sample(tmp, preds[int(len(preds)/2)][0], ax)
+	pyplot.show()
+	#plot_sample(sample[0], y_pred, ax)
+	#for i in range(0, frame.shape[0]-width, step):
+	#	for j in range(0, frame.shape[1]-height, step):
+	#		window = frame[i:i+width,j:j+height]
+	#		tmp = np.zeros((width, height), dtype=np.float32)
+	#		for row in range(width):
+	#			for col in range(height):
+	#				tmp[row,col] = sum(window[row,col])
+	#		#print tmp.shape, preds.shape
+	#		print len(preds), i, j
+	#		plot_sample(tmp, preds[int(len(preds)/2)][0], ax)
+	#		#plot_sample(tmp, preds, ax)
+	#		pyplot.show(block=False)
+	#		#pyplot.draw()
+	#		#print "looping"
+	#		sleep(1)
+
+
+from time import sleep
+def plot_cam(fname_net='net.pickle'):
+	import cv2
+	with open(fname_net, 'rb') as f:
+		net = pickle.load(f)
+	cap = cv2.VideoCapture(1);
+	while (True):
+		ret, frame = cap.read()
+		detections = sliding_window(frame, net, 96, 96, 48)
+		plot_instance(frame, detections, 96, 96, 48)
+		print "I ran"
+		sleep(.1);
+
+
+def detect_keypoint_in_face(net, image, face):
+	detection = image[face[0]:face[0]+96, face[1]:face[1]+96]
+	detection = detection / 255.
+	detection = detection.reshape(-1, 1, 96, 96)
+	detection = detection.astype(np.float32)
+	return net.predict(detection)
+
+
+def detection_distance(det1, det2, factor = 2):
+	res = 0
+	for i in range(4):
+		res += (det1[i] - det2[i]) ** factor
+	return (res)
+
+
+def pick_favourite(detections, last, img):
+	if len(detections) == 0:
+		return (last)
+	current = last
+	minv = 12000000
+	mid = [img.shape[0] - 48, img.shape[1] - 48,
+			img.shape[0] + 47, img.shape[1] + 47]
+	for detection in detections:
+		tmpv = detection_distance(detection, last, 3) + detection_distance(detection, mid)
+		#print tmpv
+		if tmpv < minv:
+			minv = tmpv
+			current = detection
+	return current
+
+
+import threading
+
+import Queue 
+
+videoPollData = Queue.LifoQueue(maxsize=500)
+class CameraPollThread(threading.Thread): 
+	def __init__(self, cv2):
+		self.stream = cv2.VideoCapture(1)
+		self.grabbed, self.frame = self.stream.read()
+		threading.Thread.__init__(self)
+	def run(self):
+		while True:
+			self.grabbed, self.frame = self.stream.read()
+			if (videoPollData.full()):
+				pass
+				with videoPollData.mutex:
+					del videoPollData.queue[:]
+					videoPollData.queue = []
+			videoPollData.put(self.frame)
+
+
+import time
+
+
+global camera_confidence
+camera_confidence = 0
+#def keypoints_are_good
+def  plot_video(fname_net='net.pickle', data_queue=None):
+	with open(fname_net, 'rb') as f:
+		net = pickle.load(f)
+	import cv2
+	#cv2.CAP_PROP_BUFFERSIZE = 1
+	cascPath = "haarcascade_frontalface_default.xml"
+	faceCascade = cv2.CascadeClassifier(cascPath)
+	#cap = cv2.VideoCapture(1);
+	pollThread = CameraPollThread(cv2);
+	pollThread.start()
+	import matplotlib.pyplot as plt
+	last = [400,350,400,350]
+	last_detection = 0
+	ltma = 0
+	confidence = 0
+	ticks = 0
+	activations = 0
+	while (True):
+		if videoPollData.empty():
+			time.sleep(0.02)
+			continue;
+		frame = videoPollData.get()
+		gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+		faces = faceCascade.detectMultiScale(
+			gray,
+			scaleFactor=1.1,
+			minNeighbors=5,
+			minSize=(30, 30),
+			flags = cv2.CASCADE_SCALE_IMAGE
+		)
+		implot = plt.imshow(gray, cmap='gray')
+		tmp = pick_favourite(faces, last, gray)
+		if (not (tmp is last)):
+			if len(tmp) != 4:
+				print "Error in tmp, was", tmp
+				continue
+			if gray.shape != (480, 640):
+				print "Error in Gray, was", gray, gray.shape
+				continue
+			if tmp[0] < gray.shape[0] - 96 and tmp[1] < gray.shape[1] - 96:
+				last = tmp
+				tmp = detect_keypoint_in_face(net, gray, tmp)[0]
+				plt.scatter(tmp[0::2] * 48 + 48 + last[0], tmp[1::2] * 48 + 48 + last[1], marker='x', s=10)
+
+		last_detection *= .99
+		sval =  sum(tmp[1::2])
+		last_detection += sval / (100 * 15)
+		ltma *= .9999
+		ltma += sval / (100 * 15)
+		#print "LTMA is ", abs(sval - ltma)
+		#if (abs(sval - ltma) > 
+		confidence = abs(sval - last_detection)
+		confidence += abs(sval - ltma) - 0.3
+		if confidence > 1 and confidence < 3:
+			if (data_queue):
+				data_queue[0] = 1
+			activations += 1
+			if activations == 1:
+				ticks = 0
+		elif ticks > 6:
+			activations = 0
+			ticks = 0
+			#if (data_queue):
+			#	data_queue[0] = 0
+		ticks += 1
+		if activations > 3:
+			if (data_queue):
+				data_queue[0] = 1
+			#print "Activated at", activations, confidence
+		else:
+			if data_queue:
+				data_queue[0] = 0
+		#print "Confidence is", confidence
+		#for face in faces:
+		#	if face[0] < gray.shape[0] - 96 and face[1] < gray.shape[1] - 96:
+		#		pass
+		#		tmp = detect_keypoint_in_face(net, gray, face)[0]
+		#		plt.scatter(tmp[0::2] * 48 + 48 + face[0], tmp[1::2] * 48 + 48 + face[1], marker='x', s=10)
+		#cv2.imshow("Faces found", gray)
+		#plt.scatter
+		plt.pause(0.01)
+		#plt.waitKey(25)
+		#cv2.waitKey(25)
+		plt.clf()
+
+#	axis.scatter(y[0::2] * 48 + 48, y[1::2] * 48 + 48, marker='x', s=10)
 
 
 
@@ -447,4 +673,4 @@ if __name__ == '__main__':
 		print(__doc__)
 	else:
 		func = globals()[sys.argv[1]]
-func(*sys.argv[2:])
+	func(*sys.argv[2:])

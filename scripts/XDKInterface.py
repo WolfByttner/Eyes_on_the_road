@@ -3,6 +3,19 @@ import serial
 import sys
 import time
 
+
+import os
+dirs = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(dirs + "/../tutorial")
+print sys.path
+from kfkdfull import *
+import threading
+global our_queue
+our_queue = [0]
+t = threading.Thread(target=plot_video, kwargs={"data_queue":our_queue})
+t.start()
+lock = threading.Lock()
+
 ser = serial.Serial()
 ser.port = "/dev/ttyACM0" # may be called something different
 ser.baudrate = 19200 # may be different
@@ -34,9 +47,28 @@ def refresh_vector():
 
 while True:
         if ((time.time() - start_time)>1):
+
                 refresh_vector()
                 start_time = time.time()
         identifier = ser.read(3)
+        lock.acquire()
+        try:
+            decision_vector[0] = our_queue[0]
+            #print our_queue
+        except Exception as e:
+            print e
+            pass
+        finally:
+            lock.release()
+        
+        dv = decision_vector
+        active = (dv[1] + dv[0]) * 1.6
+        passive = (dv[2] * 3 + dv[3] + dv[4] + dv[5]) * 0.4
+        #if active >= .5 and passive >= .5:
+        if active + passive > 1.6:
+            print "Sending sleep"
+            ser.write('sleep')
+            #exit(0)
         #time.sleep(3)
         #ser.write('sleep')
         #print "sent sleep"
