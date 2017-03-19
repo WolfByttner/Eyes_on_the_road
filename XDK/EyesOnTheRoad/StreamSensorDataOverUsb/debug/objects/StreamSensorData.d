@@ -1,5 +1,5 @@
-C:/XDK-Workbench/workspace/EyesOnTheRoad/StreamSensorDataOverUsb/debug/objects/StreamSensorDataOverUsb.o: \
- C:/XDK-Workbench/workspace/EyesOnTheRoad/StreamSensorDataOverUsb/source/StreamSensorDataOverUsb.c \
+C:/XDK-Workbench/workspace/EyesOnTheRoad/StreamSensorDataOverUsb/debug/objects/StreamSensorData.o: \
+ C:/XDK-Workbench/workspace/EyesOnTheRoad/StreamSensorDataOverUsb/source/StreamSensorData.c \
  ../Platform/Basics/include/BCDS_Basics.h \
  C:/XDK-Workbench/workspace/EyesOnTheRoad/StreamSensorDataOverUsb/source/protected/Accelerometer.h \
  C:/XDK-Workbench/workspace/EyesOnTheRoad/StreamSensorDataOverUsb/source/protected/Gyroscope.h \

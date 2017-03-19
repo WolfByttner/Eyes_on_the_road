@@ -69,12 +69,13 @@
  */
 void init(void)
 {
-   accelerometerSensorInit();
-   gyroscopeSensorInit();
+   //accelerometerSensorInit();
+   //gyroscopeSensorInit();
    //inertialSensorInit(); //Does the same as accelerometerSensorInit and gyroscopeSensorInit
-   lightsensorInit();
+   //lightsensorInit();
    //magnetometerSensorInit(); //Not used
-   environmentalSensorInit();
+   //environmentalSensorInit();
+   bleInit();
 }
 
 /**
